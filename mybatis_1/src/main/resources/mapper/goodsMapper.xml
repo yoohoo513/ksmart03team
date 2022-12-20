@@ -51,9 +51,9 @@
 	<insert id="addGoods" parameterType="Goods">
 		/* 상품 추가 */
 		INSERT INTO tb_goods
-			(g_code,g_name,g_price,g_seller_id,g_reg_date)
+			(g_code,g_name,g_price,g_seller_id)
 		VALUES
-			(sf_new_goods_code(),#{goodsName},#{goodsPrice},#{goodsSellerId},curdate());
+			(sf_new_goods_code(),#{goodsName},#{goodsPrice},#{goodsSellerId});
 	</insert>
 	
 	<select id="getSellerId" resultType="Member">
