@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default}">
+<head>
+
+	<style type="text/css">
+		table {
+			border: 1px solid black;
+			width: 100%;
+			table-layout: auto;
+			text-align: center;
+		}
+		th {
+			border: 1px solid black;
+			background-color: cornflowerblue;
+			color: azure;
+			height: 30px;
+		}
+		td {
+			border: 1px solid black;
+			height: 30px;
+		}
+		#rightcolumn {
+			overflow:scroll
+		}
+		div {
+			width: 100%;
+			margin-bottom: 10px;
+		}
+		</style>
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<th:block layout:fragment="customContents">
+	
+		<table>
+            <thead>
+                <tr>
+                    <th>판매자아이디</th>
+                    <th>판매자이름</th>
+                    <th>판매자이메일</th>
+                    <th>판매자주소</th>
+                    <th>상품코드</th>
+                    <th>상품이름</th>
+                    <th>상품가격</th>
+                    <th>상품등록일자</th>
+                </tr>
+            </thead>
+            <tbody>
+                <th:block th:if="${not #lists.isEmpty(sellerList)}" th:each="l : ${sellerList}">
+					<th:block th:each="gl,status : ${l.goodsList}">
+						<tr> 
+							<th:block th:if="${status.index == 0}">
+			                	<td th:text="${l.memberId}" th:rowspan="${status.size}"></td>
+			                    <td th:text="${l.memberName}" th:rowspan="${status.size}"></td>
+			                    <td th:text="${l.memberEmail}" th:rowspan="${status.size}"></td>
+			                    <td th:text="${l.memberAddr}" th:rowspan="${status.size}"></td>
+		                   	</th:block>
+		                    <td th:text="*{gl.goodsCode}"></td>
+		                    <td th:text="*{gl.goodsName}"></td>
+		                    <td th:text="*{gl.goodsPrice}"></td>
+		            		<td th:text="*{gl.goodsRegDate}"></td>
+	            		</tr>
+                    </th:block>
+				</th:block>
+                <tr th:unless="${not #lists.isEmpty(sellerList)}">
+					<td colspan="8">등록된 상품이 없습니다.</td>
+				</tr>
+            </tbody>
+   		</table>
+   		
+	</th:block>
+	
+</body>
+</html>

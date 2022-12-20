@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<meta charset="UTF-8">
+	<title th:text="${title}"></title>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+</head>
+<body>
+	<div id="wrapper">
+		<!-- navibar(상단메뉴) start -->
+		<!-- 조각의 문법 ~{조각 경로 :: 조각이름} -->
+		<div th:replace="~{fragments/naviFragment :: naviFragment}"></div>
+		<!-- navibar(상단메뉴) end -->
+		
+		<!-- aside(왼쪽메뉴) start -->
+		<div th:replace="~{fragments/asideFragment :: asideFragment}"></div>
+		<!-- aside(왼쪽메뉴) end -->
+		
+		<!-- content start -->
+		<div id="rightcolumn">
+			<!-- 페이지마다 변경되는 contents -->
+			<th:block layout:fragment="customContents">
+			
+			</th:block>
+		</div>
+		<!-- content end -->
+		
+		<!-- footer(하단) start -->
+		<div th:replace="~{fragments/footerFragment :: footerFragment}"></div>
+		<!-- footer(하단) end -->
+		
+	</div>
+		<!-- 사용자 지정 js 파일 -->
+		<th:block layout:fragment="customJs"></th:block>
+		<!-- 사용자 지정 js script -->
+		<!-- <th:block layout:fragment="customScript"></th:block> -->
+		
+</body>
+</html>

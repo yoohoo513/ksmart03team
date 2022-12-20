@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default}">
+	  
+	<head>
+		<style type="text/css">
+			table {
+				border:1px solid black;
+				width: 665px;
+				table-layout:auto;
+				text-align:center;
+			}
+			th {
+				border:1px solid black;
+				background-color: cornflowerblue;
+				color: azure;
+				height: 30px; 
+			}
+			td {
+				border:1px solid black;
+				height: 30px;
+			}
+			#submitBtn{
+				margin-right:30px;
+			}
+			input{
+				width:98%;
+				height: 80%;
+			}
+			select {
+				width: 99%;
+				height: 90%	
+			}
+		</style>
+		
+		<!-- 사용자 지정 js 파일 -->
+		<th:block layout:fragment="customJs">
+			<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+		</th:block>
+		<!-- 사용자 지정 js script -->
+		<th:block layout:fragment="customScript">
+			<script>
+				
+			</script>
+		
+		</th:block>
+		
+	</head>
+	
+	<th:block layout:fragment="customContents">
+		<form th:action="@{/goods/modifyGoodsAction}" method="post" id="modifyGoodsForm">
+			<table  th:object="${goodsInfo}">
+				<tbody>
+
+					<tr>
+						<td>
+							<label for="goodsCode">상품이름</label>
+						</td>
+						<td colspan="2">
+							<input type="text" id="goodsCode" name="goodsCode" th:value="*{goodsCode}" readonly>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							<label for="goodsName">상품이름</label>
+						</td>
+						<td colspan="2">
+							<input type="text" id="goodsName" name="goodsName" placeholder="상품이름을 입력하세요." th:value="*{goodsName}">
+						</td>
+					</tr>
+						
+					<tr>
+	                    <td><label for="goodsPrice">상품가격</label>
+	                    </td>
+	                    <td colspan="2">
+	                       <input type="text" id="goodsPrice" name="goodsPrice" placeholder="상품가격을 입력하세요." th:value="*{goodsPrice}">
+	                    </td>
+	                </tr>
+						
+					<tr>
+						<td>
+							<label for="goodsSellerId">상품판매자</label>
+						</td>
+						<td colspan="2">
+							<select id="goodsSellerId" name="goodsSellerId">
+	                            <th:block th:if="${not #lists.isEmpty(goodsSellerIdList)}"
+	                                th:each="l : ${goodsSellerIdList}">
+	                                <option th:value="${l.goodsSellerId}">
+	                               		[[|${l.goodsSellerId} &ensp;::::&ensp; ${l.goodsSellerName}|]] 
+	                                </option>
+	                            </th:block>
+	                            <th:block th:unless="${not #lists.isEmpty(goodsSellerIdList)}">
+	                                <option>등록된 회원등급이 없습니다.</option>
+	                            </th:block>
+	                        </select>
+						</td>
+					</tr>
+					
+
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3">
+							<button type="submit" id="submitBtn">상품정보수정</button>
+							<button type="reset" id="resetBtn">취소</button>
+						</td>
+						
+					</tr>
+				</tfoot>
+			</table>
+		</form>	
+	</th:block>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default}">
+<head>
+
+	<style type="text/css">
+		table {
+			border: 1px solid black;
+			width: 100%;
+			table-layout: auto;
+			text-align: center;
+		}
+		th {
+			border: 1px solid black;
+			background-color: cornflowerblue;
+			color: azure;
+			height: 30px;
+		}
+		td {
+			border: 1px solid black;
+			height: 30px;
+		}
+		#rightcolumn {
+			overflow:scroll
+		}
+		div {
+			width: 100%;
+			margin-bottom: 10px;
+		}
+		</style>
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<th:block layout:fragment="customContents">
+
+		<table>
+            <thead>
+                <tr>
+                    <th>상품코드</th>
+                    <th>상품명</th>
+                    <th>상품가격</th>
+                    <th>판매자아이디</th>
+                    <th>판매자이름</th>
+                    <th>판매자이메일</th>
+                    <th>상품등록일자</th>
+                    <th>수정</th>
+                    <th>삭제</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:unless="${#lists.isEmpty(goodsList)}" th:each="l : ${goodsList}">
+                    <td th:text="${l.goodsCode}"></td>
+                    <td th:text="${l.goodsName}"></td>
+                    <td th:text="${'💲' + #numbers.formatInteger(l.goodsPrice, 3, 'COMMA')}"></td>
+                    <th:block th:object="${l.member}">
+	                    <td th:text="*{memberId}"></td>
+	                    <td th:text="*{memberName}"></td>
+	                    <td th:text="*{memberEmail}"></td>
+                    </th:block>
+                    <td th:text="${l.goodsRegDate}"></td>
+                    
+                    <td>
+						<!-- /member/modifyMember?memberId=id001 -->
+						<a th:href="@{/goods/modifyGoods(goodsCode=${l.goodsCode})}">수정</a>
+					</td>
+						
+					<td>
+						<a th:href="@{/goods/removeGoods/{goodsCode}(goodsCode=${l.goodsCode})}">삭제</a>
+					</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(goodsList)}">
+					<td colspan="9">등록된 상품이 없습니다.</td>
+				</tr>
+            </tbody>
+   		</table>
+	
+	</th:block>
+
+
+</body>
+</html>

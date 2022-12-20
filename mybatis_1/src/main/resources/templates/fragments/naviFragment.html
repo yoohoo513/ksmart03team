@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<div id="header" th:fragment="naviFragment">
+		상단메뉴 <br>
+		/fragments/naviFragment.html <br>
+		
+		<a th:if="${session.S_MEMBER_INFO ==null or session.S_MEMBER_INFO.loginLevel == 1}" th:href="@{/member/addMember}">회원가입</a>
+		
+		
+		<a th:if="${session.S_MEMBER_INFO !=null and session.S_MEMBER_INFO.loginLevel < 2}" th:href="@{/member/memberList}">회원목록</a>
+		
+		
+		<a th:if="${session.S_MEMBER_INFO !=null and session.S_MEMBER_INFO.loginLevel < 3}" th:href="@{/goods/addGoods}">상품등록</a>
+		
+		
+		<a th:if="${session.S_MEMBER_INFO !=null and session.S_MEMBER_INFO.loginLevel < 3}" th:href="@{/goods/goodsList}">상품조회</a>
+		
+		
+		<a th:if="${session.S_MEMBER_INFO !=null and session.S_MEMBER_INFO.loginLevel < 2}" th:href="@{/goods/sellerList}">판매자현황</a>
+		
+		
+		<a th:if="${session.S_MEMBER_INFO !=null and session.S_MEMBER_INFO.loginLevel < 2}" th:href="@{/member/loginHistory}">로그인이력</a>
+		
+		
+		<a th:if="${session.S_MEMBER_INFO ==null}" th:href="@{/member/login}">로그인</a>
+		<a th:unless="${session.S_MEMBER_INFO ==null}" th:href="@{/member/logout}">로그아웃</a>
+		<br><br>
+		<div th:unless="${session.S_MEMBER_INFO ==null}" style="text-align: right;">
+			<label th:text="|${session.S_MEMBER_INFO.loginId}(${session.S_MEMBER_INFO.loginName})님이 로그인 하셨습니다.|"></label>
+		</div>
+		
+	</div>
+
+</html>

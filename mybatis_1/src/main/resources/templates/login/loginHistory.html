@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default}">
+<head>
+
+	<style type="text/css">
+		table {
+			border: 1px solid black;
+			width: 100%;
+			table-layout: auto;
+			text-align: center;
+		}
+		th {
+			border: 1px solid black;
+			background-color: cornflowerblue;
+			color: azure;
+			height: 30px;
+		}
+		td {
+			border: 1px solid black;
+			height: 30px;
+		}
+		#rightcolumn {
+			overflow:scroll
+		}
+		div {
+			width: 100%;
+			margin-bottom: 10px;
+		}
+		</style>
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<th:block layout:fragment="customContents">
+	
+		<table>
+            <thead>
+                <tr>
+                    <th>회원아이디</th>
+                    <th>회원등급</th>
+                    <th>회원이름</th>
+                    <th>회원이메일</th>
+                    <th>로그인시간</th>
+                    <th>로그아웃시간</th>
+                </tr>
+            </thead>
+            <tbody>
+				<tr th:if="${not #lists.isEmpty(loginHistory)}" th:each="l : ${loginHistory}">
+					<th:block th:object="${l.member}">
+						<td th:text="*{memberId}"></td>
+						<td th:text="*{memberLevelName}"></td>
+						<td th:text="*{memberName}"></td>
+						<td th:text="*{memberEmail}"></td>
+						<td th:text="${l.loginDate}"></td>
+						<td th:text="${l.logoutDate}"></td>
+					</th:block>
+				</tr>
+				<tr th:unless="${not #lists.isEmpty(loginHistory)}" th:each="l : ${loginHistory}">
+					<td colspan="6">등록된 로그인 이력이 없습니다.</td>
+				</tr>
+            </tbody>
+            <tfoot>
+            	<tr>
+            		<td colspan="6">
+            			<a th:href="@{/member/loginHistory}">[처음]</a>
+	            		<a th:if="${currentPage > 1}" th:href="@{/member/loginHistory(currentPage=${currentPage - 1})}">[이전]</a>
+	            		<span th:unless="${currentPage > 1}">[이전]</span>
+	          
+	            		<th:block th:each="num : ${#numbers.sequence(startPageNum, endPageNum)}">
+	            			<a th:if="${currentPage != num}" th:href="@{/member/loginHistory(currentPage=${num})}" th:text="|[${num}]|"></a>
+	            			<span th:if="${currentPage == num}">[[${'['+num+']'}]]</span>
+	            		</th:block>
+	            		
+	            		<a th:if="${currentPage < lastPage}" th:href="@{/member/loginHistory(currentPage=${currentPage + 1})}">[다음]</a>
+	            		<span th:unless="${currentPage < lastPage}">[다음]</span>
+	            		<a th:href="@{/member/loginHistory(currentPage=${lastPage})}">[마지막]</a>
+            		</td>
+            	</tr>
+            </tfoot>
+   		</table>
+   		
+	</th:block>
+	
+</body>
+</html>

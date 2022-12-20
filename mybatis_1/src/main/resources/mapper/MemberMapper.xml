@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="ksmart.mybatis.mapper.MemberMapper">
+
+	<resultMap type="Member" id="memberResultMap">
+		<id property="memberId" column="m_id" />
+		<result property="memberPw" column="m_pw" />
+		<result property="memberLevel" column="m_level" />
+		<result property="memberLevelName" column="level_name" />
+		<result property="memberName" column="m_name" />
+		<result property="memberEmail" column="m_email" />
+		<result property="memberAddr" column="m_addr" />
+		<result property="memberRegDate" column="m_reg_date" />
+		
+		<collection property="goodsList" javaType="list" ofType="Goods">
+			<id property="goodsCode" column="g_code" />
+			<result property="goodsName" column="g_name"/>	
+			<result property="goodsPrice" column="g_price"/>	
+			<result property="goodsSellerId" column="g_seller_id"/>	
+			<result property="goodsRegDate" column="g_reg_date"/>	
+		</collection>
+		
+	</resultMap>
+	
+	<resultMap type="LoginHistory" id="loginResultMap">
+	
+		<id property="loginNum" column="login_num" />
+		<result property="loginId" column="login_id" />
+		<result property="loginDate" column="login_date" />
+		<result property="logoutDate" column="logout_date" />
+		
+		<association property="member" javaType="Member">
+			<id property="memberId" column="m_id" />
+			<result property="memberPw" column="m_pw" />
+			<result property="memberLevel" column="m_level" />
+			<result property="memberLevelName" column="level_name" />
+			<result property="memberName" column="m_name" />
+			<result property="memberEmail" column="m_email" />
+			<result property="memberAddr" column="m_addr" />
+			<result property="memberRegDate" column="m_reg_date" />
+		</association>
+	
+	</resultMap>
+
+	<select id="getMemberList" resultType="Member" parameterType="String">
+		/* 회원목록 조회 */
+		SELECT
+			m.m_id			AS memberId
+			,m.m_pw			AS memberPw
+			,m.m_name		AS memberName
+			,m.m_level		AS memberLevel
+			,ml.level_name  AS memberLevelName
+			,m.m_email		AS memberEmail
+			,m.m_reg_date	AS memberRegDate
+		FROM
+			tb_member AS m
+			join
+				tb_member_level as ml
+			on
+				m.m_level = ml.level_num
+			<where>
+				<if test="searchKey != null and searchValue != ''">
+					${searchKey} LIKE CONCAT('%',#{searchValue},'%');
+				</if>
+			
+			</where>
+	</select>
+	
+	<select id="getMemberLevelList" resultType="MemberLevel">
+		SELECT
+			level_num	 as levelNum
+			,level_name  as levelName
+		FROM
+			tb_member_level;
+	</select>
+	
+	<insert id="addMember" parameterType="Member">
+		/* 회원가입 */
+		insert into tb_member
+		(
+			m_id
+			,m_pw
+			,m_level
+			,m_name
+			,m_email
+			,m_addr
+			,m_reg_date
+		)values(
+			#{memberId}, #{memberPw}, #{memberLevel}, #{memberName}, #{memberEmail}, #{memberAddr}, CURDATE()
+		)
+	</insert>
+	
+	<select id="checkMemberId" parameterType="String" resultType="boolean">
+	
+		SELECT
+			if(COUNT(*) = 1, 1, 0)
+		FROM
+			tb_member
+		WHERE
+			m_id =#{memberId};
+		
+	</select>
+	
+	<select id="getMemberInfoById" parameterType="String" resultMap="memberResultMap">
+		/* 특정 회원 정보 조회 */
+		SELECT 
+			m.m_id
+			,m.m_pw
+			,m.m_name
+			,m.m_level
+			,ml.level_name
+			,m.m_email
+			,m.m_addr
+		FROM
+			tb_member AS m
+			join
+			tb_member_level AS ml
+			on
+			m.m_level = ml.level_num
+		WHERE
+			m_id=#{memberId};
+	
+	</select>
+	
+	<update id="modifyMember" parameterType="Member">
+		UPDATE tb_member
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="memberPw != null and memberPw != ''">
+				,m_pw=#{memberPw}
+			</if>
+			<if test="memberLevel != null and memberLevel != ''">
+				,m_level=#{memberLevel}
+			</if>
+			<if test="memberName != null and memberName != ''">
+				,m_name=#{memberName}
+			</if>
+			<if test="memberEmail != null and memberEmail != ''">
+				,m_email=#{memberEmail}
+			</if>
+			<if test="memberAddr != null and memberAddr != ''">
+				,m_addr=#{memberAddr}
+			</if>
+		</trim>
+		where
+			m_id=#{memberId};
+	</update>
+	
+	<!-- 판매자가 등록한 상품에 대한 주문 이력 삭제 -->
+	<delete id="removeOrderByGoodsCode" parameterType="String">
+		/* 판매자가 등록한 상품에 대한 주문 이력 삭제 */
+		delete
+			o
+		FROM
+			tb_goods AS g
+			JOIN
+				tb_order AS o
+			ON
+				g.g_code = o.o_g_code
+		WHERE
+			g.g_seller_id = #{memberId};
+	</delete>
+	
+	<!-- 판매자가 등록한 상품 삭제 -->
+	<delete id="removerGoodsById" parameterType="String">	
+		/* 판매자가 등록한 상품 삭제 */
+		delete
+			g
+		FROM
+			tb_goods AS g
+		WHERE
+			g.g_seller_id=#{memberId};
+	</delete>	
+			
+	<!-- 구매자의 구매이력 삭제 -->
+	<delete id="removeOrderById" parameterType="String">
+		/* 구매자의 구매 이력 삭제 */
+		delete
+			o
+		from 
+			tb_order as o
+		where 
+			o.o_id = #{memberId};
+	</delete>		
+	
+	<!-- 로그인 이력 삭제 -->
+	<delete id="removeLoginHistoryById" parameterType="String">
+		/* 로그인 이력 삭제 */
+		delete
+			l
+		from 
+			tb_login as l
+		where 
+			l.login_id = #{memberId};
+	</delete>
+	
+	<!-- 회원 탈퇴 -->
+	<delete id="removeMemberById" parameterType="String">
+		/* 회원 탈퇴 */
+		delete
+			m
+		from 
+			tb_member as m
+		where 
+			m.m_id = #{memberId};	
+	</delete>
+		
+	<select id="getSellerList" resultMap="memberResultMap">
+		/* 판매자 현황 조회 */
+		
+		SELECT
+			m.m_id
+			,m.m_name
+			,m.m_email
+			,m.m_addr
+			,g.g_code
+			,g.g_name
+			,g.g_price
+			,g.g_reg_date
+		FROM
+			tb_member AS m
+			LEFT join
+			tb_goods AS g
+			ON
+			m.m_id = g.g_seller_id
+		where
+			m.m_level =2;
+		
+	</select>
+	
+	<select id="getLoginHistory" parameterType="map" resultMap="loginResultMap">
+		/* 로그인 이력 조회 */
+		SELECT
+			m.m_id
+			,m.m_name
+			,m.m_email
+			,m.m_addr
+			,ml.level_name
+			,l.login_date
+			,l.logout_date
+		FROM
+			tb_member AS m
+			JOIN
+			tb_login AS l
+			ON
+			m.m_id = l.login_id
+			join
+			tb_member_level AS ml
+			ON
+			ml.level_num = m.m_level
+			ORDER BY l.login_date DESC
+		<if test="startRowNum != null and startRowNum > -1">
+			LIMIT #{startRowNum}, #{rowPerPage};
+		</if>
+	</select>
+	
+	<select id="getLoginHistoryCnt" resultType="int">
+		/* 로그인 이력테이블의 전체 행의 갯수 */
+		SELECT
+			COUNT(1)
+		FROM
+			tb_login;
+	
+	</select>
+	
+	
+</mapper>
+
+
